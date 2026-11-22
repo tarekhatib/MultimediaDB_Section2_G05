@@ -7,8 +7,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mdip</groupId>
-    <artifactId>mdip-core</artifactId>
+    <groupId>com.mdib</groupId>
+    <artifactId>mdib-core</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -76,7 +76,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.mdip.app.Main</mainClass>
+                    <mainClass>com.mdib.app.Main</mainClass>
                 </configuration>
             </plugin>
 

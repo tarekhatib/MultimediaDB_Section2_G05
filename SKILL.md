@@ -1,4 +1,4 @@
-# SKILL.md — MDIP Group 05 Team Working Context
+# SKILL.md — MDIB Group 05 Team Working Context
 
 ## How to use this file
 
@@ -161,7 +161,7 @@ MultimediaDB_Section2_G05/
 │   └── development-guidelines.md
 ├── java_code/
 │   ├── pom.xml
-│   └── src/main/java/com/mdip/
+│   └── src/main/java/com/mdib/
 │       ├── app/
 │       ├── database/
 │       ├── detection/
