@@ -1,6 +1,6 @@
-package com.mdip.cbir;
+package com.mdib.cbir;
 
-import com.mdip.processing.OpenCvSupport;
+import com.mdib.processing.OpenCvSupport;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;

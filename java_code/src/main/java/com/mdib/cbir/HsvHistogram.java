@@ -1,4 +1,4 @@
-package com.mdip.cbir;
+package com.mdib.cbir;
 
 import java.util.Arrays;
 import java.util.Locale;

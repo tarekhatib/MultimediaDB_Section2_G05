@@ -28,7 +28,7 @@ pixels across bins — the descriptor should stay stable when the detector is fo
   partial occlusion (only shared colour mass counts) — Swain & Ballard, 1991.
 - Secondary (for comparison in the report): **chi-square** `½ Σ (aᵢ−bᵢ)²/(aᵢ+bᵢ)` ∈ [0, 1], 0 = identical.
 
-## Java API (`com.mdip.cbir`)
+## Java API (`com.mdib.cbir`)
 
 ```java
 HsvHistogram h = new HsvHistogramExtractor().extract(Path.of("car.jpg")); // or extract(Mat bgr)
@@ -62,7 +62,7 @@ macOS (Intel + Apple Silicon) and Linux, so no manual install is needed. Call
 
 ```
 java_code/mvnw -f java_code/pom.xml test
-java_code/mvnw -f java_code/pom.xml compile exec:java -Dexec.mainClass=com.mdip.cbir.HistogramDemo -Dexec.args="query.jpg a.jpg b.jpg"
+java_code/mvnw -f java_code/pom.xml compile exec:java -Dexec.mainClass=com.mdib.cbir.HistogramDemo -Dexec.args="query.jpg a.jpg b.jpg"
 ```
 
 The demo prints the OpenCV version, then ranks the other images by intersection with the query.

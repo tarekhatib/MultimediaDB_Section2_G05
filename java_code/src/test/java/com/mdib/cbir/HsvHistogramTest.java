@@ -1,6 +1,6 @@
-package com.mdip.cbir;
+package com.mdib.cbir;
 
-import com.mdip.processing.OpenCvSupport;
+import com.mdib.processing.OpenCvSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

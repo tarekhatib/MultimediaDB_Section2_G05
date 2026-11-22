@@ -1,6 +1,6 @@
-package com.mdip.cbir;
+package com.mdib.cbir;
 
-import com.mdip.processing.OpenCvSupport;
+import com.mdib.processing.OpenCvSupport;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Standalone prototype: proves OpenCV loads, extracts HSV histograms and ranks images.
  *
  * <pre>
- * mvnw exec:java -Dexec.mainClass=com.mdip.cbir.HistogramDemo -Dexec.args="query.jpg a.jpg b.jpg"
+ * mvnw exec:java -Dexec.mainClass=com.mdib.cbir.HistogramDemo -Dexec.args="query.jpg a.jpg b.jpg"
  * </pre>
  *
  * The first argument is the query; the rest form the collection.

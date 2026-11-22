@@ -1,4 +1,4 @@
-package com.mdip.cbir;
+package com.mdib.cbir;
 
 /**
  * Similarity / distance measures between two L1-normalised histograms.

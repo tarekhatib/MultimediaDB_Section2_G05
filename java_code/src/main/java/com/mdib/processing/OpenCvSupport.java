@@ -1,4 +1,4 @@
-package com.mdip.processing;
+package com.mdib.processing;
 
 import nu.pattern.OpenCV;
 import org.opencv.core.Core;
