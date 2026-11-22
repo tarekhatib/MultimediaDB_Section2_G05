@@ -1,15 +1,19 @@
 package com.mdip.cbir;
 
 import com.mdip.processing.OpenCvSupport;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,20 +27,35 @@ class HsvHistogramTest {
     private static final double EPS = 1e-6;
     private final HsvHistogramExtractor extractor = new HsvHistogramExtractor();
 
+    /** Native matrices created by a test; all released after each test. */
+    private final List<Mat> nativeMats = new ArrayList<>();
+
     @BeforeAll
     static void loadOpenCv() {
         OpenCvSupport.ensureLoaded();
     }
 
+    @AfterEach
+    void releaseNativeMats() {
+        nativeMats.forEach(Mat::release);
+        nativeMats.clear();
+    }
+
+    private <T extends Mat> T track(T mat) {
+        nativeMats.add(mat);
+        return mat;
+    }
+
     /** Solid BGR image. */
-    private static Mat solid(double b, double g, double r) {
-        return new Mat(32, 32, CvType.CV_8UC3, new Scalar(b, g, r));
+    private Mat solid(double b, double g, double r) {
+        return track(new Mat(32, 32, CvType.CV_8UC3, new Scalar(b, g, r)));
     }
 
     /** Left half one colour, right half another. */
-    private static Mat split(Scalar left, Scalar right) {
-        Mat m = new Mat(32, 32, CvType.CV_8UC3, left);
-        m.colRange(16, 32).setTo(right);
+    private Mat split(Scalar left, Scalar right) {
+        Mat m = track(new Mat(32, 32, CvType.CV_8UC3, left));
+        Mat rightHalf = track(m.colRange(16, 32));
+        rightHalf.setTo(right);
         return m;
     }
 
@@ -98,9 +117,9 @@ class HsvHistogramTest {
         Scalar red = new Scalar(0, 0, 255);
         HsvHistogram query = extractor.extract(solid(0, 0, 255));
         Map<Long, HsvHistogram> collection = Map.of(
-                1L, extractor.extract(solid(255, 0, 0)),               // blue: 0.0
+                1L, extractor.extract(solid(255, 0, 0)),                  // blue: 0.0
                 2L, extractor.extract(split(red, new Scalar(255, 0, 0))), // half red: 0.5
-                3L, extractor.extract(solid(0, 0, 255)));              // red: 1.0
+                3L, extractor.extract(solid(0, 0, 255)));                 // red: 1.0
 
         List<HistogramRetriever.Match> ranked = HistogramRetriever.rank(query, collection, 10);
         assertEquals(List.of(3L, 2L, 1L), ranked.stream().map(HistogramRetriever.Match::imageId).toList());
@@ -108,19 +127,25 @@ class HsvHistogramTest {
     }
 
     @Test
-    void jsonRoundTripPreservesVector() {
-        HsvHistogram h = extractor.extract(split(new Scalar(0, 0, 255), new Scalar(40, 180, 60)));
+    void jsonRoundTripPreservesVectorExactly() {
+        // A three-colour image gives non-trivial fractions (e.g. 1/3) that need full float precision.
+        Mat img = track(new Mat(30, 30, CvType.CV_8UC3, new Scalar(0, 0, 255)));
+        track(img.colRange(10, 20)).setTo(new Scalar(40, 180, 60));
+        track(img.colRange(20, 30)).setTo(new Scalar(200, 90, 10));
+
+        HsvHistogram h = extractor.extract(img);
         HsvHistogram back = HsvHistogram.fromJsonArray(8, 4, 4, h.toJsonArray());
-        assertArrayEquals(h.values(), back.values(), 1e-6f);
+        assertArrayEquals(h.values(), back.values(), 0f);
+        assertEquals(h, back);
     }
 
     @Test
     void readsImageFromDiskIncludingNonAsciiPath(@TempDir Path dir) throws Exception {
         Path file = dir.resolve("صورة_é.png");
         // Write via imencode + Files so the non-ASCII path is handled by Java, not OpenCV.
-        org.opencv.core.MatOfByte buf = new org.opencv.core.MatOfByte();
+        MatOfByte buf = track(new MatOfByte());
         Imgcodecs.imencode(".png", solid(0, 0, 255), buf);
-        java.nio.file.Files.write(file, buf.toArray());
+        Files.write(file, buf.toArray());
 
         float[] v = extractor.extract(file).values();
         assertEquals(1.0f, v[15], 1e-6f);
@@ -131,7 +156,7 @@ class HsvHistogramTest {
         HsvHistogram a = new HsvHistogramExtractor(8, 4, 4).extract(solid(0, 0, 255));
         HsvHistogram b = new HsvHistogramExtractor(4, 4, 4).extract(solid(0, 0, 255));
         assertThrows(IllegalArgumentException.class, () -> HistogramSimilarity.intersection(a, b));
-        assertThrows(IllegalArgumentException.class,
-                () -> extractor.extract(new Mat(8, 8, CvType.CV_8UC1)));
+        Mat grey = track(new Mat(8, 8, CvType.CV_8UC1));
+        assertThrows(IllegalArgumentException.class, () -> extractor.extract(grey));
     }
 }

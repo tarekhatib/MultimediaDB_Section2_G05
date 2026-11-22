@@ -70,11 +70,15 @@ public final class HsvHistogram {
         return hBins == other.hBins && sBins == other.sBins && vBins == other.vBins;
     }
 
-    /** Encodes the vector as a JSON array of floats, e.g. {@code [0.125,0.0,...]}. */
+    /**
+     * Encodes the vector as a JSON array of floats, e.g. {@code [0.125000000,0.00000000,...]}.
+     * Uses 9 significant digits, enough for every float to survive a store/reload round trip
+     * unchanged.
+     */
     public String toJsonArray() {
         StringJoiner joiner = new StringJoiner(",", "[", "]");
         for (float v : values) {
-            joiner.add(String.format(Locale.ROOT, "%.6g", v));
+            joiner.add(String.format(Locale.ROOT, "%.9g", v));
         }
         return joiner.toString();
     }

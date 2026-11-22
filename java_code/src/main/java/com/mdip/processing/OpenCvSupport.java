@@ -45,13 +45,23 @@ public final class OpenCvSupport {
     /**
      * Reads an image as an 8-bit, 3-channel BGR matrix.
      *
+     * <p>The caller owns the returned {@link Mat} and must call {@link Mat#release()}
+     * when done, since its pixel data lives in native memory.
+     *
      * @throws IOException if the file cannot be read or is not a decodable image
      */
     public static Mat readBgr(Path path) throws IOException {
         ensureLoaded();
         byte[] bytes = Files.readAllBytes(path);
-        Mat image = Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_COLOR);
+        MatOfByte encoded = new MatOfByte(bytes);
+        Mat image;
+        try {
+            image = Imgcodecs.imdecode(encoded, Imgcodecs.IMREAD_COLOR);
+        } finally {
+            encoded.release();
+        }
         if (image.empty()) {
+            image.release();
             throw new IOException("Not a decodable image: " + path);
         }
         return image;

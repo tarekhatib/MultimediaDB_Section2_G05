@@ -62,17 +62,17 @@ public final class HsvHistogramExtractor {
         if (bgr.empty() || bgr.type() != CvType.CV_8UC3) {
             throw new IllegalArgumentException("Expected a non-empty 8-bit 3-channel BGR image");
         }
+        // Every temporary below wraps native memory, so all are released in finally
+        // to avoid leaks when processing large image collections.
         Mat hsv = new Mat();
         Mat hist = new Mat();
+        Mat noMask = new Mat();
+        MatOfInt channels = new MatOfInt(0, 1, 2);
+        MatOfInt histSize = new MatOfInt(hBins, sBins, vBins);
+        MatOfFloat ranges = new MatOfFloat(0f, 180f, 0f, 256f, 0f, 256f);
         try {
             Imgproc.cvtColor(bgr, hsv, Imgproc.COLOR_BGR2HSV);
-            Imgproc.calcHist(
-                    List.of(hsv),
-                    new MatOfInt(0, 1, 2),
-                    new Mat(),
-                    hist,
-                    new MatOfInt(hBins, sBins, vBins),
-                    new MatOfFloat(0f, 180f, 0f, 256f, 0f, 256f));
+            Imgproc.calcHist(List.of(hsv), channels, noMask, hist, histSize, ranges);
 
             // calcHist returns a 3-D CV_32F matrix laid out h-major, then s, then v.
             float[] values = new float[hBins * sBins * vBins];
@@ -88,6 +88,10 @@ public final class HsvHistogramExtractor {
         } finally {
             hsv.release();
             hist.release();
+            noMask.release();
+            channels.release();
+            histSize.release();
+            ranges.release();
         }
     }
 }
