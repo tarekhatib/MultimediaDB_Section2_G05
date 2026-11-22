@@ -18,6 +18,7 @@
         <javafx.version>21.0.10</javafx.version>
         <jackson.version>2.20.1</jackson.version>
         <junit.version>5.11.4</junit.version>
+        <opencv.version>4.9.0-0</opencv.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,13 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.51.1.0</version>
+        </dependency>
+
+        <!-- OpenCV (Java bindings + bundled native libs for Windows/macOS/Linux) -->
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>${opencv.version}</version>
         </dependency>
 
         <!-- JSON communication -->
