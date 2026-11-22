@@ -39,8 +39,17 @@ HsvHistogram back = HsvHistogram.fromJsonArray(8, 4, 4, json);
 ```
 
 `HistogramRetriever` works on caller-supplied IDs (e.g. `images.id`), so it has no
-dependency on the database layer. Suggested `descriptors` row:
-`descriptor_type = "HSV_HIST_8x4x4"`, `feature_vector = h.toJsonArray()`.
+dependency on the database layer. Mapping to the `descriptors` table in
+`docs/database-schema.md`:
+
+| Column | Value |
+|---|---|
+| `descriptor_type` | `HSV_HIST_8x4x4` (`h.type()`) |
+| `configuration_json` | `{"colorSpace":"HSV","hBins":8,"sBins":4,"vBins":4,"normalization":"L1","binOrder":"h-major"}` |
+| `feature_vector` | `h.toJsonArray()` — JSON array of 128 floats |
+
+To load: `HsvHistogram.fromJsonArray(hBins, sBins, vBins, feature_vector)` with the bin
+counts from `configuration_json`.
 
 ## OpenCV setup
 
